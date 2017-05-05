@@ -23,7 +23,7 @@ public class HtmlUtil {
         for (HashMap map:dataList){
             result.append("<tr>\n" +
                     "     <td >\n" +
-                    "     &nbsp&nbsp<a href=\""+MainActivity.ipAdress+":"+(String)map.get("port")+
+                    "     &nbsp&nbsp<a href=\""+"http://192.168.199.154"+":"+map.get("port")+
                     "\" download=\""+(String )map.get("name")+".txt\">"+(String )map.get("name")+"</a>&nbsp&nbsp&nbsp&nbsp</td>\n" +
                     "     <td>&nbsp "+(String )map.get("size")+" kB &nbsp</td>\n" +
                     "     </tr>");

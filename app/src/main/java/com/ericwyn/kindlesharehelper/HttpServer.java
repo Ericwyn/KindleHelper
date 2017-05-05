@@ -4,16 +4,15 @@ package com.ericwyn.kindlesharehelper;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import fi.iki.elonen.NanoHTTPD;
 
 /**
  * 主页的http服务类
  * Created by Ericwyn on 2017/2/1.
  */
 
-public class HttpServer extends NanoHTTPD {
+public class HttpServer extends fi.iki.elonen.NanoHTTPD {
 
-    public static final int DEFAULT_SERVER_PORT=8888;
+    public static final int DEFAULT_SERVER_PORT=10010;
     private static ArrayList<HashMap<String,Object>> data;
 
     public HttpServer(ArrayList<HashMap<String,Object>> list){

@@ -24,7 +24,7 @@ public class SimpleServer extends NanoHTTPD {
         super(port);
         this.filePath=filePath;
     }
-
+    //http://192.168.199.154:10010/
     @Override
     public Response serve(IHTTPSession session) {
         Method method = session.getMethod();

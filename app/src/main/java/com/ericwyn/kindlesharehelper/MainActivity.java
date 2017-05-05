@@ -62,11 +62,9 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 
-import fi.iki.elonen.NanoHTTPD;
-
 public class MainActivity extends AppCompatActivity {
 
-    private NanoHTTPD server;
+    private HttpServer server;
     private String sdPath= Environment.getExternalStorageDirectory().getPath();
     private ImageButton fab;
     private boolean isServiceOpen=false;
@@ -91,19 +89,21 @@ public class MainActivity extends AppCompatActivity {
         //启动主页服务
         server=new HttpServer(list);
 
-        ipAdress=ip.getText().toString();
+        ipAdress=getLocalIpStr(MainActivity.this);
         //获取ip地址，供给SimpleServer构造下载地址端口
-//        simpleServers=new SimpleServer[list.size()];
-//        for(int i=0;i<list.size();i++){
-//            int portTemp=(int )list.get(i).get("port");
-//            simpleServers[i]=new SimpleServer(portTemp,(String)list.get(i).get("path"));
-//        }
+        simpleServers=new SimpleServer[list.size()];
+        for(int i=0;i<list.size();i++){
+            int portTemp=(int )list.get(i).get("port");
+            simpleServers[i]=new SimpleServer(portTemp,(String)list.get(i).get("path"));
+        }
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(isServiceOpen){
                     stopServer();
+                }else {
+                    openServer();
                     if(!server.isAlive()){
                         try {
                             server.start();
@@ -111,8 +111,6 @@ public class MainActivity extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
-                }else {
-                    openServer();
                 }
             }
         });
@@ -126,15 +124,15 @@ public class MainActivity extends AppCompatActivity {
         try{
             server.start();
             fab.setBackground(getDrawable(R.drawable.ripple_bg_blue));
-//            try{
-//                for(SimpleServer simpleServer:simpleServers){
-//                    if(simpleServer!=null && !simpleServer.isAlive()){
-//                        simpleServer.start();
-//                    }
-//                }
-//            }catch (IOException e){
-//                Log.i("MainActivity","启动simple服务时候遇到失败");
-//            }
+            try{
+                for(SimpleServer simpleServer:simpleServers){
+                    if(simpleServer!=null && !simpleServer.isAlive()){
+                        simpleServer.start();
+                    }
+                }
+            }catch (IOException e){
+                Log.i("MainActivity","启动simple服务时候遇到失败");
+            }
 
         }catch (IOException ioe){
             ioe.printStackTrace();
@@ -142,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        ip.setText(getLocalIpStr(this));
+        ip.setText(getLocalIpStr(MainActivity.this));
         isServiceOpen=true;
     }
 
@@ -154,11 +152,11 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-//        for(SimpleServer simpleServer:simpleServers){
-//            if(simpleServer.isAlive()){
-//                simpleServer.stop();
-//            }
-//        }
+        for(SimpleServer simpleServer:simpleServers){
+            if(simpleServer.isAlive()){
+                simpleServer.stop();
+            }
+        }
 
         server.stop();
         fab.setBackground(getDrawable(R.drawable.ripple_bg_red));
@@ -191,6 +189,24 @@ public class MainActivity extends AppCompatActivity {
         server.stop();
     }
 
+    public static String getHostIp1() {
+        try {
+            for (Enumeration<NetworkInterface> en = NetworkInterface
+                    .getNetworkInterfaces(); en.hasMoreElements();) {
+                NetworkInterface intf = en.nextElement();
+                for (Enumeration<InetAddress> ipAddr = intf.getInetAddresses(); ipAddr
+                        .hasMoreElements();) {
+                    InetAddress inetAddress = ipAddr.nextElement();
+                    if (!inetAddress.isLoopbackAddress()) {
+                        return inetAddress.getHostAddress();
+                    }
+                }
+            }
+        } catch (SocketException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
 
     /**
      * 获取机器本身的ip地址，首先判断wifi是否开启，如果开启的话返回wifi连接的ip地址，否则返回移动网络的ip地址
