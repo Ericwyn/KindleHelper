@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -24,7 +25,7 @@ import java.util.List;
  */
 
 public class FileListView extends ListView implements AdapterView.OnItemClickListener{
-    private Context mContext;
+
     private LayoutInflater inflater;
     private ListView mListView;
     private SimpleAdapter adapter;
@@ -33,20 +34,15 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
 
     private String historyPath=
             Environment.getExternalStorageDirectory().getPath();    //当前显示列表的父目录路径，默认是sd卡
-    //记录当前滚动到的位置
-    private int scrolledX=0;
-    private int scrolledY=0;
-    //记录父目录的list滚动到的地方
-    private int lastscrolledX=0;
-    private int lastscrolledY=0;
-
+    //委曲求全，记录当前滚动到的item编号
+    private int position=0;
+    private int lastPosition=0;
 
     public FileListView(Context context, AttributeSet attrs) {
         super(context, attrs);
         inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.listview_item, null);
+//        View view = inflater.inflate(R.layout.listview_item, null);
         mListView=this;
-        mContext=context;
         dataList=getDataList(historyPath);
         adapter=new SimpleAdapter(context,
                 dataList,R.layout.listview_item,
@@ -54,6 +50,22 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
                 new int[]{R.id.imgView_item,R.id.textName_item});
         mListView.setAdapter(adapter);
         mListView.setOnItemClickListener(this);
+        super.setOnScrollListener(new OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                // 不滚动时保存当前滚动到的位置
+                if (scrollState == OnScrollListener.SCROLL_STATE_IDLE) {
+//
+                    position =mListView.getFirstVisiblePosition();
+                    Log.i("测试","position:"+position+"lastPosition:"+lastPosition);
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+
+            }
+        });
     }
 
     /**
@@ -85,7 +97,6 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
     private ArrayList<HashMap<String ,Object>> getDataList(String path){
         ArrayList<HashMap<String ,Object>> list=new ArrayList<>();
         File file=new File(path);
-        //如果目录不是sd卡片跟目录，那么应该加上一个返回上一级目录的提示
 
         Log.i("AbsolutePath",file.getAbsolutePath());
 
@@ -174,9 +185,10 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
         //整合两个list
         list.addAll(filelist);
 
+        //如果目录不是sd卡片跟目录，那么应该加上一个返回上一级目录的提示
         if(!file.getAbsolutePath().equals(Environment.getExternalStorageDirectory().getPath())){
             HashMap<String ,Object> map=new HashMap<>();
-            map.put("img",R.drawable.idea);
+            map.put("img",R.drawable.directory_icon);
             map.put("name","返回上一级");
             list.add(0,map);
         }
@@ -189,13 +201,15 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
      * @param path  目录的路径
      */
     private void toPath(String path){
-        lastscrolledX=scrolledX;
-        lastscrolledY=scrolledY;
+        lastPosition=position;
+        Log.i("测试","position:"+position+"lastPosition:"+lastPosition);
         //更新列表数据
         historyPath=path;
         dataList.clear();
         dataList.addAll(getDataList(historyPath));
         adapter.notifyDataSetChanged();
+        mListView.setSelection(0);
+
     }
 
     /**
@@ -208,7 +222,8 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
         dataList.clear();
         dataList.addAll(getDataList(historyPath));
         adapter.notifyDataSetChanged();
-        mListView.scrollTo(lastscrolledX, lastscrolledY);
+        Log.i("测试","position:"+position+"lastPosition:"+lastPosition);
+        mListView.setSelection(lastPosition);
     }
 
 //    /**
@@ -251,6 +266,7 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
                 pathFlag=pathFlag+flags[i]+"/";
             }
             pathFlag=pathFlag.substring(0,pathFlag.length()-1);
+
             backToPath(pathFlag);
         }else {
             File file=new File(nameMapFlag.get(map.get("name")));
@@ -258,12 +274,12 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
             if(file.isDirectory()){
                 name=file.getAbsolutePath();
                 Log.i("选中的路径为:",name);
+
                 toPath(name);
             }else {
                 name=file.getAbsolutePath();
                 Log.i("选中的文件为:",name);
             }
-//            Toast.makeText(FileChosse.this,name,Toast.LENGTH_SHORT).show();
         }
     }
 

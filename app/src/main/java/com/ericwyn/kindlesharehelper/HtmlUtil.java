@@ -1,5 +1,7 @@
 package com.ericwyn.kindlesharehelper;
 
+import com.ericwyn.kindlesharehelper.fragment.MainFragment;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -20,11 +22,25 @@ public class HtmlUtil {
     public static String makeHtml(ArrayList<HashMap<String,Object>> dataList){
         StringBuffer result=new StringBuffer();
         result.append(head);
+
+        /* 循环类似于生成一下的Html代码
+        <tr>
+            <td>
+                &nbsp;&nbsp;
+                <a href="http://192.168.199.154:9999" download="欢迎文件.txt.txt">欢迎文件.txt</a>
+                &nbsp;&nbsp;&nbsp;&nbsp;
+            </td>
+            <td>
+                &nbsp; 1 kB &nbsp;
+            </td>
+        </tr>
+        */
+
         for (HashMap map:dataList){
             result.append("<tr>\n" +
                     "     <td >\n" +
-                    "     &nbsp&nbsp<a href=\""+"http://192.168.199.154"+":"+map.get("port")+
-                    "\" download=\""+(String )map.get("name")+".txt\">"+(String )map.get("name")+"</a>&nbsp&nbsp&nbsp&nbsp</td>\n" +
+                    "     &nbsp&nbsp<a href=\""+"http://"+ MainFragment.ipAdress+":"+map.get("port")+
+                    "\" download=\""+(String )map.get("name")+"\">"+(String )map.get("name")+"</a>&nbsp&nbsp&nbsp&nbsp</td>\n" +
                     "     <td>&nbsp "+(String )map.get("size")+" kB &nbsp</td>\n" +
                     "     </tr>");
         }

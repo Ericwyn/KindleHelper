@@ -16,10 +16,19 @@ public class FileChooseDialogBuilder extends AlertDialog.Builder {
     private Context mContext;
     private FileListView listView;
 
+    /**
+     * 默认选择全部的类型
+     * @param context   上下文
+     */
     public FileChooseDialogBuilder(@NonNull Context context){
         this(context,"all");
     }
 
+    /**
+     * 带有类型的选择
+     * @param context   上下文
+     * @param type  类型
+     */
     public FileChooseDialogBuilder(@NonNull Context context, String type) {
         super(context);
         mContext=context;
