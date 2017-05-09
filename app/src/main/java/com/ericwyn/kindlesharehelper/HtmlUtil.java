@@ -39,7 +39,7 @@ public class HtmlUtil {
         for (HashMap map:dataList){
             result.append("<tr>\n" +
                     "     <td >\n" +
-                    "     &nbsp&nbsp<a href=\""+"http://"+ MainFragment.ipAdress+":"+map.get("port")+
+                    "     &nbsp&nbsp<a href=\""+"http://"+ MainFragment.getLocalIpStr(MainFragment.mContext)+":"+map.get("port")+
                     "\" download=\""+(String )map.get("name")+"\">"+(String )map.get("name")+"</a>&nbsp&nbsp&nbsp&nbsp</td>\n" +
                     "     <td>&nbsp "+(String )map.get("size")+" kB &nbsp</td>\n" +
                     "     </tr>");

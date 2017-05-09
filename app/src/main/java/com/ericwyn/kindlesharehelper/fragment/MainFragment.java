@@ -6,7 +6,6 @@ import android.net.NetworkInfo;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -28,9 +27,9 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
+
+import static com.ericwyn.kindlesharehelper.fragment.FileChooseFragment.sdPath;
 
 /**
  *
@@ -39,44 +38,30 @@ import java.util.HashMap;
 
 public class MainFragment extends Fragment{
     private HttpServer server;
-    private String sdPath= Environment.getExternalStorageDirectory().getPath();
     private ImageButton fab;
     private boolean isServiceOpen=false;
     private SimpleServer[] simpleServers;
     private TextView ip;
     public  static String ipAdress="";
+    public static Context mContext;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view=inflater.inflate(R.layout.fragment_main,container,false);
+        mContext=getContext();
         fab=(ImageButton)view.findViewById(R.id.fab_main) ;
         ip=(TextView)view.findViewById(R.id.tv_ipadress_main);
-        ArrayList<HashMap<String ,Object>> list=new ArrayList<>();
-        HashMap<String,Object> map=new HashMap<>();
-        map.put("name","欢迎文件.txt");
-        map.put("size","小于1");
-        map.put("path",sdPath+"/KindleShareHelper/欢迎文件.txt");
-        map.put("port",9999);
-        list.add(map);
-        //启动主页服务
-        server=new HttpServer(list);
-
-        ipAdress=getLocalIpStr(getContext());
-        //获取ip地址，供给SimpleServer构造下载地址端口
-        simpleServers=new SimpleServer[list.size()];
-        for(int i=0;i<list.size();i++){
-            int portTemp=(int )list.get(i).get("port");
-            simpleServers[i]=new SimpleServer(portTemp,(String)list.get(i).get("path"));
-        }
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(isServiceOpen){
+                    buildServer();
                     stopServer();
                 }else {
                     openServer();
+
                     if(!server.isAlive()){
                         try {
                             server.start();
@@ -89,6 +74,27 @@ public class MainFragment extends Fragment{
         });
         return view;
     }
+
+    /**
+     * 构建服务，主业服务的构建，每次点击启动按钮的时候都要重新构建服务
+     */
+    private void buildServer(){
+        stopServer();
+        //构建主页服务
+        server=new HttpServer(FileChooseFragment.appData);
+
+        //构建文件下载页面服务
+        ipAdress=getLocalIpStr(mContext);
+        //获取ip地址，供给SimpleServer构造下载地址端口
+        simpleServers=new SimpleServer[FileChooseFragment.appData.size()];
+        for(int i=0;i<FileChooseFragment.appData.size();i++){
+            int portTemp=10000+i;   //文件端口从10000开始，依次增加，于是就不用文件端口了
+            simpleServers[i]=new SimpleServer(portTemp,(String)FileChooseFragment.appData.get(i).get("path"));
+        }
+
+    }
+
+
     private void openServer(){
         if(server==null){
             return;

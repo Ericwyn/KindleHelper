@@ -46,6 +46,7 @@
             android:layout_height="match_parent">
 
             <ListView
+                android:id="@+id/listView_fileChooseList_fileChooseFragment"
                 android:layout_width="347dp"
                 android:layout_height="434dp"
                 android:layout_marginRight="8dp"

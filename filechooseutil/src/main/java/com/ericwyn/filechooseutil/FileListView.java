@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-
 /**
  *
  * Created by ericwyn on 17-4-22.
@@ -37,6 +36,11 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
     //委曲求全，记录当前滚动到的item编号
     private int position=0;
     private int lastPosition=0;
+
+    private String pathData;
+    public FileChoose mActivity;
+
+
 
     public FileListView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -67,6 +71,11 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
             }
         });
     }
+
+    public void setActivity(FileChoose activity){
+        mActivity=activity;
+    }
+
 
     /**
      * 用来得到<文件名称—文件具体路径>的map
@@ -226,10 +235,6 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
         mListView.setSelection(lastPosition);
     }
 
-//    /**
-//     * 修改返回按键的事件
-//     */
-//    @Override
 
     /**
      * 对返回按钮的事件处理，返回事件处理是否执行
@@ -279,8 +284,17 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
             }else {
                 name=file.getAbsolutePath();
                 Log.i("选中的文件为:",name);
+                setPathData();
+                mActivity.resultActivity();
             }
         }
     }
 
+    private void setPathData(){
+        pathData=getPathData();
+    }
+
+    public String getPathData(){
+        return pathData;
+    }
 }

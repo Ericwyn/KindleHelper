@@ -38,13 +38,14 @@ public class FileChooseDialogBuilder extends AlertDialog.Builder {
         //设置标题
         super.setTitle("选择文件");
 
-        //设置积极按钮
-        super.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
 
-            }
-        });
+//        //设置积极按钮
+//        super.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//            @Override
+//            public void onClick(DialogInterface dialog, int which) {
+//
+//            }
+//        });
 
         //设置消极按钮
         super.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -63,6 +64,14 @@ public class FileChooseDialogBuilder extends AlertDialog.Builder {
     @Override
     public AlertDialog.Builder setView(View view) {
         listView=(FileListView)view.findViewById(R.id.listView_FileChoose);
+
         return super.setView(view);
     }
+
+    public FileListView getListView(){
+        return listView;
+    }
+
+
+
 }
