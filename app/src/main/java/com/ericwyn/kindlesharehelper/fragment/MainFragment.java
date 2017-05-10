@@ -58,7 +58,7 @@ public class MainFragment extends Fragment{
         serverOpenText =(TextView)view.findViewById(R.id.tv_isServerOpen);
         shareFileNum =(TextView)view.findViewById(R.id.tv_shareFileNum);
 
-        shareFileNum.setText(""+FileChooseFragment.appData.size());
+//        shareFileNum.setText(""+FileChooseFragment.appData.size());
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
