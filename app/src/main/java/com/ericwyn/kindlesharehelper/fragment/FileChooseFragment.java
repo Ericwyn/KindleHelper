@@ -26,6 +26,8 @@ import java.util.HashMap;
  */
 
 public class FileChooseFragment extends Fragment{
+    private static int portTemp=9527;
+    private static boolean initData=true;
     private ImageButton button;
     private ListView listView;
     private static SimpleAdapter adapter;
@@ -50,8 +52,8 @@ public class FileChooseFragment extends Fragment{
         adapter=new SimpleAdapter(getContext(),
                 appData,
                 R.layout.item_lv_filchoose,
-                new String[]{},
-                new int[]{}
+                new String[]{"name","size"},
+                new int[]{R.id.tv_fileName_item,R.id.tv_fileSize_item}
         );
 
         listView.setAdapter(adapter);
@@ -60,8 +62,10 @@ public class FileChooseFragment extends Fragment{
             @Override
             public void onClick(View v) {
                 Intent intent=new Intent(getActivity(),com.ericwyn.filechooseutil.FileChoose.class);
-                startActivity(intent);
+                startActivityForResult(intent,1);
+
 //                fileChooseDialogBuilder.getListView()
+
             }
         });
 
@@ -72,11 +76,16 @@ public class FileChooseFragment extends Fragment{
      * 设置默认数据
      */
     private static void initDataFirst(){
-        HashMap<String,Object> map=new HashMap<>();
-        map.put("name","欢迎文件.txt");
-        map.put("size",FileTools.getAutoFileOrFilesSize(sdPath+"/KindleShareHelper/欢迎文件.txt"));
-        map.put("path",sdPath+"/KindleShareHelper/欢迎文件.txt");
-        appData.add(map);
+        if(initData){
+            HashMap<String,Object> map=new HashMap<>();
+            map.put("name","欢迎文件.txt");
+            map.put("size",FileTools.getAutoFileOrFilesSize(sdPath+"/KindleShareHelper/欢迎文件.txt"));
+            map.put("path",sdPath+"/KindleShareHelper/欢迎文件.txt");
+            map.put("port",portTemp++);
+            appData.add(map);
+            initData=false;
+        }
+
     }
 
     /**
@@ -86,9 +95,13 @@ public class FileChooseFragment extends Fragment{
     public static void addaData(String filePath){
         HashMap<String,Object> map=new HashMap<>();
         String[] pathTemp=filePath.split("/");
+
         map.put("name",pathTemp[pathTemp.length-1]);
         map.put("size", FileTools.getAutoFileOrFilesSize(filePath));
         map.put("path",filePath);
+        map.put("port",portTemp++);
+
+
         appData.add(map);
         adapter.notifyDataSetChanged();
     }
@@ -108,4 +121,8 @@ public class FileChooseFragment extends Fragment{
     }
 
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+    }
 }

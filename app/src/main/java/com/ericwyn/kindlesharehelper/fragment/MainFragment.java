@@ -45,6 +45,9 @@ public class MainFragment extends Fragment{
     public  static String ipAdress="";
     public static Context mContext;
 
+    private TextView serverOpenText;
+    private TextView shareFileNum;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -52,14 +55,19 @@ public class MainFragment extends Fragment{
         mContext=getContext();
         fab=(ImageButton)view.findViewById(R.id.fab_main) ;
         ip=(TextView)view.findViewById(R.id.tv_ipadress_main);
+        serverOpenText =(TextView)view.findViewById(R.id.tv_isServerOpen);
+        shareFileNum =(TextView)view.findViewById(R.id.tv_shareFileNum);
+
+        shareFileNum.setText(""+FileChooseFragment.appData.size());
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(isServiceOpen){
-                    buildServer();
+
                     stopServer();
                 }else {
+                    buildServer();
                     openServer();
 
                     if(!server.isAlive()){
@@ -88,14 +96,20 @@ public class MainFragment extends Fragment{
         //获取ip地址，供给SimpleServer构造下载地址端口
         simpleServers=new SimpleServer[FileChooseFragment.appData.size()];
         for(int i=0;i<FileChooseFragment.appData.size();i++){
-            int portTemp=10000+i;   //文件端口从10000开始，依次增加，于是就不用文件端口了
-            simpleServers[i]=new SimpleServer(portTemp,(String)FileChooseFragment.appData.get(i).get("path"));
+//            int portTemp=9527+i;   //文件端口从9527开始，依次增加，于是就不用文件端口了
+
+            simpleServers[i]=
+                    new SimpleServer(
+                            (int)FileChooseFragment.appData.get(i).get("port"),        //端口
+                            (String)FileChooseFragment.appData.get(i).get("path"));     //文件路径
         }
+
 
     }
 
 
     private void openServer(){
+
         if(server==null){
             return;
         }
@@ -120,6 +134,9 @@ public class MainFragment extends Fragment{
         }
 
         ip.setText(getLocalIpStr(getContext())+":"+HttpServer.DEFAULT_SERVER_PORT);
+        serverOpenText.setText("服务已开启");
+        shareFileNum.setText(""+FileChooseFragment.appData.size());
+
         isServiceOpen=true;
     }
 
@@ -140,6 +157,8 @@ public class MainFragment extends Fragment{
         server.stop();
         fab.setBackground(getActivity().getDrawable(R.drawable.ripple_bg_red));
         ip.setText("请先开启服务");
+        serverOpenText.setText("服务未开启");
+        shareFileNum.setText("0");
         isServiceOpen=false;
     }
 
@@ -196,28 +215,86 @@ public class MainFragment extends Fragment{
      * @return 返回ip地址的字符串，形式类似于：192.168.1.1
      */
     public static String getLocalIpStr(Context context){
-        if(isWiFi(context)){
-            WifiManager wifiManager=(WifiManager)context.getSystemService(Context.WIFI_SERVICE);
-            WifiInfo wifiInfo=wifiManager.getConnectionInfo();
-            return intToIpAddr(wifiInfo.getIpAddress());
-        }else {
+//        if(isWiFi(context)){
+//            WifiManager wifiManager=(WifiManager)context.getSystemService(Context.WIFI_SERVICE);
+//            WifiInfo wifiInfo=wifiManager.getConnectionInfo();
+//            return intToIpAddr(wifiInfo.getIpAddress());
+//        }else {
+//            try {
+//                for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+//                    NetworkInterface intf = en.nextElement();
+//                    for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+//                        InetAddress inetAddress = enumIpAddr.nextElement();
+//                        if (!inetAddress.isLoopbackAddress()) {
+//                            return inetAddress.getHostAddress().toString();
+//                        }
+//                    }
+//                }
+//            } catch (SocketException ex) {
+//                Log.e("getIPTest", ex.toString());
+//            }
+//            return null;
+//        }
+        //获取wifi服务
+        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        //判断wifi是否开启
+        if (!wifiManager.isWifiEnabled()) { //没开启
             try {
-                for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements();) {
+
+                //下面这个方法，Android 4.0以上的话 会获取ipv6的地址
+//                for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+//                    NetworkInterface intf = en.nextElement();
+//                    for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements(); ) {
+//                        InetAddress inetAddress = enumIpAddr.nextElement();
+//                        if (!inetAddress.isLoopbackAddress()) {
+//                            return inetAddress.getHostAddress().toString();
+//                        }
+//                    }
+//                }
+
+                for (Enumeration<NetworkInterface> en = NetworkInterface
+                        .getNetworkInterfaces(); en.hasMoreElements();) {
                     NetworkInterface intf = en.nextElement();
-                    for (Enumeration<InetAddress> enumIpAddr = intf.getInetAddresses(); enumIpAddr.hasMoreElements();) {
+                    for (Enumeration<InetAddress> enumIpAddr = intf
+                            .getInetAddresses(); enumIpAddr.hasMoreElements();) {
                         InetAddress inetAddress = enumIpAddr.nextElement();
-                        if (!inetAddress.isLoopbackAddress()) {
+                        if (!inetAddress.isLoopbackAddress() && !inetAddress.isLinkLocalAddress()) {
                             return inetAddress.getHostAddress().toString();
                         }
                     }
                 }
-            } catch (SocketException ex) {
-                Log.e("getIPTest", ex.toString());
-            }
-            return null;
-        }
 
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
+
+
+        } else {                            //开启
+            WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+            int ipAddress = wifiInfo.getIpAddress();
+            String ip = intToIpAddr(ipAddress);
+            return ip;
+        }
+        return null;
     }
+
+//    /**
+//     * 获取wifi热点状态，热点开启时候返回13，可以判断热点是否开启，测试方法
+//     * @param mContext
+//     * @return
+//     */
+//    public static int getWifiApState(Context mContext) {
+//        WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+//        try {
+//            Method method = wifiManager.getClass().getMethod("getWifiApState");
+//            int i = (Integer) method.invoke(wifiManager);
+//            Log.i(TAG,"wifi state:  " + i);
+//            return i;
+//        } catch (Exception e) {
+//            Log.e(TAG,"Cannot get WiFi AP state" + e);
+//            return -222;
+//        }
+//    }
 
     /**
      * 判断wifi是否开启
@@ -237,4 +314,5 @@ public class MainFragment extends Fragment{
     private static String intToIpAddr(int ip) {
         return (ip & 0xff) + "." + ((ip>>8)&0xff) + "." + ((ip>>16)&0xff) + "." + ((ip>>24)&0xff);
     }
+
 }

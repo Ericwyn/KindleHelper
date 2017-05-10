@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class HttpServer extends fi.iki.elonen.NanoHTTPD {
 
-    public static final int DEFAULT_SERVER_PORT=8888;
+    public static final int DEFAULT_SERVER_PORT=1111;
     private static ArrayList<HashMap<String,Object>> data;
 
     public HttpServer(ArrayList<HashMap<String,Object>> list){

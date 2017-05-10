@@ -41,7 +41,7 @@ public class HtmlUtil {
                     "     <td >\n" +
                     "     &nbsp&nbsp<a href=\""+"http://"+ MainFragment.getLocalIpStr(MainFragment.mContext)+":"+map.get("port")+
                     "\" download=\""+(String )map.get("name")+"\">"+(String )map.get("name")+"</a>&nbsp&nbsp&nbsp&nbsp</td>\n" +
-                    "     <td>&nbsp "+(String )map.get("size")+" kB &nbsp</td>\n" +
+                    "     <td>&nbsp "+(String )map.get("size")+"  &nbsp</td>\n" +
                     "     </tr>");
         }
 

@@ -1,6 +1,7 @@
 package com.ericwyn.filechooseutil;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Environment;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -18,6 +19,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+
+import static android.app.Activity.RESULT_OK;
+
 /**
  *
  * Created by ericwyn on 17-4-22.
@@ -114,7 +118,11 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
             HashMap<String ,Object> map=new HashMap<>();
             if(fileFlag.isDirectory()){
                 map.put("img",R.drawable.directory_icon);
-                map.put("name",fileFlag.getName());
+                if(fileFlag.getName().length()>12){
+                    map.put("name",""+fileFlag.getName().substring(0,11)+"...");
+                }else {
+                    map.put("name",fileFlag.getName());
+                }
                 list.add(map);
             }
         }
@@ -284,8 +292,14 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
             }else {
                 name=file.getAbsolutePath();
                 Log.i("选中的文件为:",name);
-                setPathData();
-                mActivity.resultActivity();
+//                setPathData();
+//                mActivity.resultActivity();
+                Intent intent2 = new Intent();
+                intent2.putExtra("filePath", name);
+                // 通过调用setResult方法返回结果给前一个activity。
+                mActivity.setResult(RESULT_OK, intent2);
+                //关闭当前activity
+                mActivity.finish();
             }
         }
     }
