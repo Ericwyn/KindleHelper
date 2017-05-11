@@ -1,4 +1,4 @@
-package com.ericwyn.kindlesharehelper;
+package com.ericwyn.kindlesharehelper.utils;
 
 import com.ericwyn.kindlesharehelper.fragment.MainFragment;
 

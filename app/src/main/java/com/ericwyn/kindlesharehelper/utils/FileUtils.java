@@ -1,4 +1,4 @@
-package com.ericwyn.kindlesharehelper;
+package com.ericwyn.kindlesharehelper.utils;
 
 /**
  * 备份用户数据用的工具类
@@ -17,7 +17,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.text.DecimalFormat;
 
-public class FileTools {
+public class FileUtils {
     private String FROM_DIR;
     private String TO_DIR;
 
@@ -39,7 +39,7 @@ public class FileTools {
     public static final int SIZETYPE_MB = 3;//获取文件大小单位为MB的double值
     public static final int SIZETYPE_GB = 4;//获取文件大小单位为GB的double值
 
-    public FileTools(Context context){
+    public FileUtils(Context context){
         mContext=context;
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             TO_DIR = ""+Environment.getExternalStorageDirectory().getPath()+mContext.getPackageName()+"/sendFile";
@@ -51,7 +51,7 @@ public class FileTools {
         }
     }
 
-    public FileTools(Context context, String backUpPathName) {
+    public FileUtils(Context context, String backUpPathName) {
         Log.i("文件复制活动","复制活动载入");
         mContext = context;
         APP_PATH = new StringBuilder("/data/data/").append(mContext.getPackageName()).toString();

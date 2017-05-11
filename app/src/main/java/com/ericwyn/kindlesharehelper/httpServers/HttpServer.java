@@ -1,5 +1,7 @@
-package com.ericwyn.kindlesharehelper;
+package com.ericwyn.kindlesharehelper.httpServers;
 
+
+import com.ericwyn.kindlesharehelper.utils.HtmlUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;

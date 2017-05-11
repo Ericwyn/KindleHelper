@@ -9,12 +9,15 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Adapter;
+import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.ericwyn.filechooseutil.FileChooseDialogBuilder;
-import com.ericwyn.kindlesharehelper.FileTools;
+import com.ericwyn.kindlesharehelper.dialog.FileDetailsDialog;
+import com.ericwyn.kindlesharehelper.utils.FileUtils;
 import com.ericwyn.kindlesharehelper.R;
 
 import java.util.ArrayList;
@@ -69,6 +72,17 @@ public class FileChooseFragment extends Fragment{
             }
         });
 
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Adapter adapter=parent.getAdapter();
+                HashMap<String ,Object> map=(HashMap<String ,Object>) adapter.getItem(position);
+                FileDetailsDialog fileDetailsDialog=new FileDetailsDialog(getContext(),map);
+                fileDetailsDialog.show();
+            }
+        });
+
+
         return view;
     }
 
@@ -79,7 +93,7 @@ public class FileChooseFragment extends Fragment{
         if(initData){
             HashMap<String,Object> map=new HashMap<>();
             map.put("name","欢迎文件.txt");
-            map.put("size",FileTools.getAutoFileOrFilesSize(sdPath+"/KindleShareHelper/欢迎文件.txt"));
+            map.put("size", FileUtils.getAutoFileOrFilesSize(sdPath+"/KindleShareHelper/欢迎文件.txt"));
             map.put("path",sdPath+"/KindleShareHelper/欢迎文件.txt");
             map.put("port",portTemp++);
             appData.add(map);
@@ -97,7 +111,7 @@ public class FileChooseFragment extends Fragment{
         String[] pathTemp=filePath.split("/");
 
         map.put("name",pathTemp[pathTemp.length-1]);
-        map.put("size", FileTools.getAutoFileOrFilesSize(filePath));
+        map.put("size", FileUtils.getAutoFileOrFilesSize(filePath));
         map.put("path",filePath);
         map.put("port",portTemp++);
 

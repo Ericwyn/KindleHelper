@@ -8,42 +8,42 @@
     tools:context="com.ericwyn.kindlesharehelper.MainActivity">
 
     <!--<Button-->
-        <!--android:id="@+id/button_test1"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--android:layout_marginLeft="8dp"-->
-        <!--android:layout_marginRight="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:text="Activity"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintRight_toRightOf="parent"-->
-        <!--app:layout_constraintTop_toTopOf="parent"-->
-        <!--app:layout_constraintVertical_bias="0.284"/>-->
+    <!--android:id="@+id/button_test1"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginBottom="8dp"-->
+    <!--android:layout_marginLeft="8dp"-->
+    <!--android:layout_marginRight="8dp"-->
+    <!--android:layout_marginTop="8dp"-->
+    <!--android:text="Activity"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--app:layout_constraintRight_toRightOf="parent"-->
+    <!--app:layout_constraintTop_toTopOf="parent"-->
+    <!--app:layout_constraintVertical_bias="0.284"/>-->
 
     <!--<Button-->
-        <!--android:id="@+id/button_test2"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:layout_marginBottom="8dp"-->
-        <!--android:layout_marginLeft="8dp"-->
-        <!--android:layout_marginRight="8dp"-->
-        <!--android:layout_marginTop="8dp"-->
-        <!--android:text="Dialog"-->
-        <!--app:layout_constraintBottom_toBottomOf="parent"-->
-        <!--app:layout_constraintLeft_toLeftOf="parent"-->
-        <!--app:layout_constraintRight_toRightOf="parent"-->
-        <!--app:layout_constraintTop_toBottomOf="@+id/button_test1"-->
-        <!--app:layout_constraintVertical_bias="0.268"/>-->
+    <!--android:id="@+id/button_test2"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginBottom="8dp"-->
+    <!--android:layout_marginLeft="8dp"-->
+    <!--android:layout_marginRight="8dp"-->
+    <!--android:layout_marginTop="8dp"-->
+    <!--android:text="Dialog"-->
+    <!--app:layout_constraintBottom_toBottomOf="parent"-->
+    <!--app:layout_constraintLeft_toLeftOf="parent"-->
+    <!--app:layout_constraintRight_toRightOf="parent"-->
+    <!--app:layout_constraintTop_toBottomOf="@+id/button_test1"-->
+    <!--app:layout_constraintVertical_bias="0.268"/>-->
 
     <!--<TextView-->
-        <!--android:id="@+id/tv_ipadress_main"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:text="服务未开启"-->
-        <!--tools:layout_editor_absoluteX="117dp"-->
-        <!--tools:layout_editor_absoluteY="216dp"/>-->
+    <!--android:id="@+id/tv_ipadress_main"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:text="服务未开启"-->
+    <!--tools:layout_editor_absoluteX="117dp"-->
+    <!--tools:layout_editor_absoluteY="216dp"/>-->
 
     <ImageButton
         android:elevation="6dp"

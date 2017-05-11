@@ -16,9 +16,9 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ericwyn.kindlesharehelper.HttpServer;
+import com.ericwyn.kindlesharehelper.httpServers.HttpServer;
 import com.ericwyn.kindlesharehelper.R;
-import com.ericwyn.kindlesharehelper.SimpleServer;
+import com.ericwyn.kindlesharehelper.httpServers.SimpleServer;
 
 import java.io.BufferedWriter;
 import java.io.File;

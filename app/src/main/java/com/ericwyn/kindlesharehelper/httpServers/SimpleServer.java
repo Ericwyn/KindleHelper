@@ -1,4 +1,4 @@
-package com.ericwyn.kindlesharehelper;
+package com.ericwyn.kindlesharehelper.httpServers;
 
 import java.io.File;
 import java.io.FileInputStream;
