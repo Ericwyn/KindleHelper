@@ -40,7 +40,7 @@ public class FileDetailsDialog extends AlertDialog.Builder {
         //设置标题
         super.setTitle("文件详情");
         //设置积极按钮
-        super.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+        super.setPositiveButton("取消", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
@@ -48,7 +48,7 @@ public class FileDetailsDialog extends AlertDialog.Builder {
         });
 
         //设置中性按钮
-        super.setNeutralButton("删除文件", new DialogInterface.OnClickListener() {
+        super.setNeutralButton("从列表移除", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 FileChooseFragment.deleteaData(FileChooseFragment.sdPath+"/"+filePath.getText().toString());

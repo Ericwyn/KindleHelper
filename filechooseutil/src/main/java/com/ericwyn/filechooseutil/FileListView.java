@@ -118,11 +118,11 @@ public class FileListView extends ListView implements AdapterView.OnItemClickLis
             HashMap<String ,Object> map=new HashMap<>();
             if(fileFlag.isDirectory()){
                 map.put("img",R.drawable.directory_icon);
-                if(fileFlag.getName().length()>12){
-                    map.put("name",""+fileFlag.getName().substring(0,11)+"...");
-                }else {
+//                if(fileFlag.getName().length()>12){
+//                    map.put("name",""+fileFlag.getName().substring(0,11)+"...");
+//                }else {
                     map.put("name",fileFlag.getName());
-                }
+//                }
                 list.add(map);
             }
         }

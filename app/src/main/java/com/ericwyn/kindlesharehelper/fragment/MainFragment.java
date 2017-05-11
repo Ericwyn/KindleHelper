@@ -1,8 +1,10 @@
 package com.ericwyn.kindlesharehelper.fragment;
 
+import android.Manifest;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiConfiguration;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -16,20 +18,20 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ericwyn.kindlesharehelper.httpServers.HttpServer;
 import com.ericwyn.kindlesharehelper.R;
+import com.ericwyn.kindlesharehelper.httpServers.HttpServer;
 import com.ericwyn.kindlesharehelper.httpServers.SimpleServer;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 
-import static com.ericwyn.kindlesharehelper.fragment.FileChooseFragment.sdPath;
+import hei.permission.PermissionActivity;
+
+import static android.content.ContentValues.TAG;
 
 /**
  *
@@ -47,7 +49,8 @@ public class MainFragment extends Fragment{
 
     private TextView serverOpenText;
     private TextView shareFileNum;
-
+    private TextView serverSSID;
+    private String SSID_text="";    //serverSSID的提示文字
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -57,7 +60,7 @@ public class MainFragment extends Fragment{
         ip=(TextView)view.findViewById(R.id.tv_ipadress_main);
         serverOpenText =(TextView)view.findViewById(R.id.tv_isServerOpen);
         shareFileNum =(TextView)view.findViewById(R.id.tv_shareFileNum);
-
+        serverSSID=(TextView)view.findViewById(R.id.tv_serverSSID_fragmentMain);
 //        shareFileNum.setText(""+FileChooseFragment.appData.size());
 
         fab.setOnClickListener(new View.OnClickListener() {
@@ -109,57 +112,118 @@ public class MainFragment extends Fragment{
 
 
     private void openServer(){
+        //判断网络状态
+        //条件，开启wifi并且已经连接，或者开启热点，如果只是用流量的话，无法开启
+        WifiManager wifiManager = (WifiManager) (WifiManager) getActivity().getApplicationContext().getSystemService(Context.WIFI_SERVICE);
 
-        if(server==null){
-            return;
-        }
-
-        try{
-            server.start();
-            fab.setBackground(getContext().getDrawable(R.drawable.ripple_bg_green));
-            try{
-                for(SimpleServer simpleServer:simpleServers){
-                    if(simpleServer!=null && !simpleServer.isAlive()){
-                        simpleServer.start();
-                    }
-                }
-            }catch (IOException e){
-                Log.i("MainActivity","启动simple服务时候遇到失败");
+        if(getWifiApState(getContext())==13 ){      //开启移动热点
+            try {
+                Method method = wifiManager.getClass()
+                        .getMethod("getWifiApConfiguration");
+//                    return (WifiConfiguration)method.invoke(mWifiManager);
+                WifiConfiguration wifiConfiguration=(WifiConfiguration)method.invoke(wifiManager);
+                SSID_text="\""+wifiConfiguration.SSID+"\"";
+            } catch (Exception e) {
+                e.printStackTrace();
+//                    return null;
             }
-
-        }catch (IOException ioe){
-            ioe.printStackTrace();
-            Toast.makeText(getContext(),"发生io错误，服务开启失败",Toast.LENGTH_SHORT).show();
+        }else if(wifiManager.isWifiEnabled()){                  //或者接入wifi
+                SSID_text=""+wifiManager.getConnectionInfo().getSSID();
+            if(wifiManager.getConnectionInfo().getSSID().contains("<unknown ssid>")){
+                Toast.makeText(getContext(),"wifi未连接",Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }else {
+            Toast.makeText(getContext(),"请接入Wifi或开启热点",Toast.LENGTH_SHORT).show();
             return;
         }
 
-        ip.setText(getLocalIpStr(getContext())+":"+HttpServer.DEFAULT_SERVER_PORT);
-        serverOpenText.setText("服务已开启");
-        shareFileNum.setText(""+FileChooseFragment.appData.size());
+        //动态权限获取，然后开启活动
+        ((PermissionActivity)getActivity()).checkPermission(
+                new PermissionActivity.CheckPermListener() {
+                    @Override
+                    public void superPermission() {
+//                        TODO : 需要权限去完成的功能
+                        if(server==null){
+                            return;
+                        }
 
-        isServiceOpen=true;
+                        try{
+                            server.start();
+                            fab.setBackground(getContext().getDrawable(R.drawable.ripple_bg_green));
+                            try{
+                                for(SimpleServer simpleServer:simpleServers){
+                                    if(simpleServer!=null && !simpleServer.isAlive()){
+                                        simpleServer.start();
+                                    }
+                                }
+                            }catch (IOException e){
+                                Log.i("MainActivity","启动simple服务时候遇到失败");
+                            }
+
+                        }catch (IOException ioe){
+                            ioe.printStackTrace();
+                            Toast.makeText(getContext(),"发生io错误，服务开启失败",Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        ip.setText(getLocalIpStr(getContext())+":"+HttpServer.DEFAULT_SERVER_PORT);
+                        serverOpenText.setText("设备请连接网络");
+                        serverSSID.setText(SSID_text);
+                        shareFileNum.setText(""+FileChooseFragment.appData.size());
+
+                        isServiceOpen=true;
+
+                    }
+                },
+                "请给予相关权限，以便开启服务",
+                Manifest.permission.CHANGE_WIFI_STATE,
+                Manifest.permission.ACCESS_WIFI_STATE,
+                Manifest.permission.WAKE_LOCK,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
     }
 
     public void stopServer(){
-        if(server==null){
-            return;
-        }
-        if(!server.isAlive()){
-            return;
-        }
 
-        for(SimpleServer simpleServer:simpleServers){
-            if(simpleServer.isAlive()){
-                simpleServer.stop();
-            }
-        }
 
-        server.stop();
-        fab.setBackground(getActivity().getDrawable(R.drawable.ripple_bg_red));
-        ip.setText("请先开启服务");
-        serverOpenText.setText("服务未开启");
-        shareFileNum.setText("0");
-        isServiceOpen=false;
+        ((PermissionActivity)getActivity()).checkPermission(
+                new PermissionActivity.CheckPermListener() {
+                    @Override
+                    public void superPermission() {
+//                        TODO : 需要权限去完成的功能
+
+                        if(server==null){
+                            return;
+                        }
+                        if(!server.isAlive()){
+                            return;
+                        }
+
+                        for(SimpleServer simpleServer:simpleServers){
+                            if(simpleServer.isAlive()){
+                                simpleServer.stop();
+                            }
+                        }
+
+                        server.stop();
+                        fab.setBackground(getActivity().getDrawable(R.drawable.ripple_bg_red));
+                        ip.setText("请先开启服务");
+                        serverOpenText.setText("服务未开启");
+                        serverSSID.setText("点击红色按钮可启动服务");
+                        shareFileNum.setText("0");
+                        isServiceOpen=false;
+
+                    }
+                },
+                "请给予相关权限，以便系统运作",
+                Manifest.permission.CHANGE_WIFI_STATE,
+                Manifest.permission.ACCESS_WIFI_STATE,
+                Manifest.permission.WAKE_LOCK,
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
     }
 
     /**
@@ -169,24 +233,6 @@ public class MainFragment extends Fragment{
     public void onDestroy() {
         super.onDestroy();
         stopServer();
-    }
-
-    /**
-     * 创建欢迎文件
-     */
-    private void createWelcomeFile(){
-        File file=new File(sdPath+"/KindleShareHelper");
-        if(!file.isDirectory()){
-            file.mkdir();
-            try{
-                BufferedWriter welcomeFile=new BufferedWriter(new FileWriter(sdPath+"/KindleShareHelper/欢迎文件.txt"));
-                welcomeFile.write("Welcome use KindleShareHelper");
-                welcomeFile.close();
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-        }
-
     }
 
 
@@ -236,7 +282,7 @@ public class MainFragment extends Fragment{
 //            return null;
 //        }
         //获取wifi服务
-        WifiManager wifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
+        WifiManager wifiManager = (WifiManager) (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
         //判断wifi是否开启
         if (!wifiManager.isWifiEnabled()) { //没开启
             try {
@@ -278,23 +324,23 @@ public class MainFragment extends Fragment{
         return null;
     }
 
-//    /**
-//     * 获取wifi热点状态，热点开启时候返回13，可以判断热点是否开启，测试方法
-//     * @param mContext
-//     * @return
-//     */
-//    public static int getWifiApState(Context mContext) {
-//        WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
-//        try {
-//            Method method = wifiManager.getClass().getMethod("getWifiApState");
-//            int i = (Integer) method.invoke(wifiManager);
-//            Log.i(TAG,"wifi state:  " + i);
-//            return i;
-//        } catch (Exception e) {
-//            Log.e(TAG,"Cannot get WiFi AP state" + e);
-//            return -222;
-//        }
-//    }
+    /**
+     * 获取wifi热点状态，热点开启时候返回13，可以判断热点是否开启，测试方法
+     * @param mContext
+     * @return  热点开启，返回13，其余状态返回11
+     */
+    public static int getWifiApState(Context mContext) {
+        WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
+        try {
+            Method method = wifiManager.getClass().getMethod("getWifiApState");
+            int i = (Integer) method.invoke(wifiManager);
+            Log.i(TAG,"wifi state:  " + i);
+            return i;
+        } catch (Exception e) {
+            Log.e(TAG,"Cannot get WiFi AP state" + e);
+            return -222;
+        }
+    }
 
     /**
      * 判断wifi是否开启

@@ -1,5 +1,6 @@
 package com.ericwyn.kindlesharehelper.fragment;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,12 +17,15 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.ericwyn.filechooseutil.FileChooseDialogBuilder;
+import com.ericwyn.kindlesharehelper.R;
 import com.ericwyn.kindlesharehelper.dialog.FileDetailsDialog;
 import com.ericwyn.kindlesharehelper.utils.FileUtils;
-import com.ericwyn.kindlesharehelper.R;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import hei.permission.PermissionActivity;
 
 /**
  * 待发送文件列表的Fragment
@@ -47,7 +51,7 @@ public class FileChooseFragment extends Fragment{
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        initDataFirst();    //放进去初始数据，也就是欢迎文件的数据
+
         View view=inflater.inflate(R.layout.fragment_filechoose,container,false);
         button=(ImageButton)view.findViewById(R.id.fab_fileChoose);
         listView=(ListView)view.findViewById(R.id.listView_fileChooseList_fileChooseFragment);
@@ -64,8 +68,20 @@ public class FileChooseFragment extends Fragment{
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(getActivity(),com.ericwyn.filechooseutil.FileChoose.class);
-                startActivityForResult(intent,1);
+                ((PermissionActivity)getActivity()).checkPermission(
+                        new PermissionActivity.CheckPermListener() {
+                            @Override
+                            public void superPermission() {
+//                        TODO : 需要权限去完成的功能
+                                Intent intent=new Intent(getActivity(),com.ericwyn.filechooseutil.FileChoose.class);
+                                startActivityForResult(intent,1);
+                            }
+                        },
+                        "请给予相关权限，以便系统运作",
+                        Manifest.permission.ACCESS_NETWORK_STATE,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+
 
 //                fileChooseDialogBuilder.getListView()
 
@@ -87,19 +103,20 @@ public class FileChooseFragment extends Fragment{
     }
 
     /**
-     * 设置默认数据
+     * 设置默认数据,只供给MainActivity使用
      */
-    private static void initDataFirst(){
+    public static void initDataFirst(){
         if(initData){
-            HashMap<String,Object> map=new HashMap<>();
-            map.put("name","欢迎文件.txt");
-            map.put("size", FileUtils.getAutoFileOrFilesSize(sdPath+"/KindleShareHelper/欢迎文件.txt"));
-            map.put("path",sdPath+"/KindleShareHelper/欢迎文件.txt");
-            map.put("port",portTemp++);
-            appData.add(map);
+            if(new File(sdPath+"/KindleShareHelper/欢迎文件.txt").isFile()){
+                HashMap<String,Object> map=new HashMap<>();
+                map.put("name","欢迎文件.txt");
+                map.put("size", FileUtils.getAutoFileOrFilesSize(sdPath+"/KindleShareHelper/欢迎文件.txt"));
+                map.put("path",sdPath+"/KindleShareHelper/欢迎文件.txt");
+                map.put("port",portTemp++);
+                appData.add(map);
+            }
             initData=false;
         }
-
     }
 
     /**

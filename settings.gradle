@@ -1,1 +1,1 @@
-include ':app', ':filechooseutil'
+include ':app', ':filechooseutil', ':permlib'
