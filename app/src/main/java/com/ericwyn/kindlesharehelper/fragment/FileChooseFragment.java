@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +16,10 @@ import android.widget.AdapterView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import com.ericwyn.filechooseutil.FileChooseDialogBuilder;
+import com.ericwyn.kindlesharehelper.MainActivity;
 import com.ericwyn.kindlesharehelper.R;
 import com.ericwyn.kindlesharehelper.dialog.FileDetailsDialog;
 import com.ericwyn.kindlesharehelper.utils.FileUtils;
@@ -81,8 +84,6 @@ public class FileChooseFragment extends Fragment{
                         Manifest.permission.ACCESS_NETWORK_STATE,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
-
-
 //                fileChooseDialogBuilder.getListView()
 
             }
@@ -98,7 +99,12 @@ public class FileChooseFragment extends Fragment{
             }
         });
 
-
+        Log.i("FileChooseFragment","活动构建完成");
+        if(!MainActivity.sharepath.equals("")){
+            addaData(MainActivity.sharepath);
+            MainActivity.sharepath="";
+            Toast.makeText(getActivity(),"所选文件已加入分享列表\n启动服务即可分享",Toast.LENGTH_SHORT).show();
+        }
         return view;
     }
 
@@ -123,7 +129,7 @@ public class FileChooseFragment extends Fragment{
      * 增加一条文件数据
      * @param filePath 传入的文件路径
      */
-    public static void addaData(String filePath){
+    public void addaData(String filePath){
         HashMap<String,Object> map=new HashMap<>();
         String[] pathTemp=filePath.split("/");
 

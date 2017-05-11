@@ -21,6 +21,6 @@ public class TextUtils {
             "\n" +
             "\nHttps://github.com/Ericwyn/KindleHelper" +
             "\n" +
-            "\n----------------------------------------------------------";
+            "\n-----------------来自应用KindleShareHelper-----------------";
 
 }

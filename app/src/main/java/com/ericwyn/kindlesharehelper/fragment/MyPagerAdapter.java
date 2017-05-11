@@ -15,16 +15,18 @@ import java.util.List;
 public class MyPagerAdapter extends FragmentPagerAdapter {
 
     private List<Fragment> fragmentList=new ArrayList<>();
-    private String[] titles={"服务","文件"};
-
-    public MyPagerAdapter(FragmentManager fm){
+    private ArrayList<String> titles=new ArrayList<>();
+    private int fragmentNum=0;
+    public MyPagerAdapter(FragmentManager fm,Fragment... fragments){
         super(fm);
-        fragmentList.add(new MainFragment());
-        fragmentList.add(new FileChooseFragment());
+        for (Fragment fragment:fragments){
+            fragmentList.add(fragment);
+            titles.add("Fragnment"+(fragmentNum++));
+        }
     }
     @Override
     public CharSequence getPageTitle(int position) {
-        return titles[position];
+        return titles.get(position);
     }
     @Override
     public Fragment getItem(int position) {

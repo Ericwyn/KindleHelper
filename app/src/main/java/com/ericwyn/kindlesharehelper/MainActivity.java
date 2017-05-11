@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 
 import com.ericwyn.kindlesharehelper.fragment.FileChooseFragment;
+import com.ericwyn.kindlesharehelper.fragment.MainFragment;
 import com.ericwyn.kindlesharehelper.fragment.MyPagerAdapter;
 import com.ericwyn.kindlesharehelper.utils.TextUtils;
 
@@ -16,22 +17,33 @@ import java.io.IOException;
 
 import hei.permission.PermissionActivity;
 
-import static com.ericwyn.kindlesharehelper.fragment.FileChooseFragment.addaData;
 import static com.ericwyn.kindlesharehelper.fragment.FileChooseFragment.sdPath;
 
 public class MainActivity extends PermissionActivity {
 
     private ViewPager viewPager;
     private MyPagerAdapter pagerAdapter;
+    private MainFragment mainFragment=new MainFragment();
+    private FileChooseFragment fileChooseFragment=new FileChooseFragment();
+    public static String sharepath="";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
         viewPager=(ViewPager)findViewById(R.id.main_viewPager);
-        pagerAdapter=new MyPagerAdapter(getSupportFragmentManager());
+        pagerAdapter=new MyPagerAdapter(getSupportFragmentManager(),mainFragment,fileChooseFragment);
         viewPager.setAdapter(pagerAdapter);
         createWelcomeFile();
+
+        if(getIntent()!=null ){
+            if(getIntent().getStringExtra("path")!=null ){
+//                Log.i("Main",getIntent().getStringExtra("path"));
+                sharepath=getIntent().getStringExtra("path");
+            }
+        }
+
     }
 
     /**
@@ -91,10 +103,23 @@ public class MainActivity extends PermissionActivity {
             case RESULT_OK:
                 Bundle bundle = data.getExtras();
                 String filePath = bundle.getString("filePath");
-                addaData(filePath);
+                fileChooseFragment.addaData(filePath);
                 break;
             default:
                 break;
         }
     }
 }
+
+/*
+* 1,     Android6.0 以上 动态权限获取
+*        引入动态权限获取               解决
+* 2，    判断是否处于Wifi，是否开启热点，如果仅仅只是开启了移动流量而没有链接wifi/开启热点的话，那么将无法开启服务
+*        判断wifi状态                 解决
+* 3，    Android系统的分享接口，像图片直接分享到微信一样
+*                                    未解决
+* 4，    重绘图标
+*                                   未解决
+* 5，    完善界面，添加页面的展示
+*        加入链接的SSID提示            解决
+* */
