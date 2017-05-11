@@ -99,7 +99,6 @@ public class FileChooseFragment extends Fragment{
             }
         });
 
-        Log.i("FileChooseFragment","活动构建完成");
         if(!MainActivity.sharepath.equals("")){
             addaData(MainActivity.sharepath);
             MainActivity.sharepath="";
@@ -130,15 +129,16 @@ public class FileChooseFragment extends Fragment{
      * @param filePath 传入的文件路径
      */
     public void addaData(String filePath){
+        Log.i("添加文件",filePath);
         HashMap<String,Object> map=new HashMap<>();
         String[] pathTemp=filePath.split("/");
 
         map.put("name",pathTemp[pathTemp.length-1]);
-        map.put("size", FileUtils.getAutoFileOrFilesSize(filePath));
+        map.put("size",FileUtils.getAutoFileOrFilesSize(filePath));
         map.put("path",filePath);
         map.put("port",portTemp++);
-
-
+        //I/添加文件: /storage/emulated/0/Download/Python编程.azw3
+        //I/添加文件: /storage/emulated/0/Download/Python编程.azw3
         appData.add(map);
         adapter.notifyDataSetChanged();
     }
