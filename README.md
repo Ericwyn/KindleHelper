@@ -11,7 +11,8 @@
 
 ## 版本更新
 
-### V 1.0
+### V 1.0 
+[下载链接](kindleShareHelper-release-v1.0.apk)
 - 增加了文件详情Dialog，以及移出文件列表功能
 - 修复wifi热点开启时无法获取IPV4的功能
 - 修复了Android6.0 上动态权限获取问题
@@ -23,3 +24,15 @@
 ### bata
 - 实现了基础的分享功能
 - 文件添加功能完整
+
+## 运行截图
+
+![1](screenshot/1.jpg)
+
+![2](screenshot/4.jpg)
+
+![3](screenshot/3.jpg)
+
+![4](screenshot/2.jpg)
+
+![5](screenshot/5.png)
